@@ -26,12 +26,16 @@ A short summary of what this project does and who it's for.
 
 This service exposes a `/forecast` endpoint which accepts latitude (`lat`) and longitude (`lon`) and returns a minimal
 forecast object based on data fetched from the OpenWeather API. It was created as part of an assignment and is intended
-as a small example of integrating an external REST API into a Spring Boot application.
+as a small example of integrating an external REST API into a Spring Boot application. The service also provides a
+second
+variant of the endpoint that accepts an address (country, city, street, housenumber) and resolves coordinates via
+OpenCage.
 
 ## Features
 
 - Fetch weather forecast from OpenWeather
 - Minimal forecast representation returned to clients
+- Optional address-to-coordinate lookup via OpenCage
 - Basic error handling for missing or invalid responses from the external API
 
 ## Tech Stack
@@ -53,56 +57,49 @@ purposes.
 
 ### Installation
 
-1. Clone the repository:
+Clone the repository:
 
 ```cmd
 git clone https://github.com/7erra/conterra.git
 cd conterra
 ```
 
-2. (Optional) Verify the Gradle wrapper works:
-
-```cmd
-gradlew.bat --version
-```
-
 ### Configuration
 
-The application uses the OpenWeather API. Set an environment variable (Windows cmd):
+This application requires an API key for OpenWeather. The address-based endpoint additionally requires an OpenCage API
+key
+(if you plan to use the address lookup).
+
+Set environment variables on Windows (cmd.exe):
 
 ```cmd
-setx OPENWEATHER_API_KEY "YOUR_OPENWEATHER_API_KEY"
+set OPENWEATHER_API_KEY "YOUR_OPENWEATHER_API_KEY"
+set OPENCAGE_API_KEY "YOUR_OPENCAGE_API_KEY"
 ```
 
 ### Run the app
 
-Start the application locally using the Gradle wrapper (Windows):
+Start the application locally using the Gradle wrapper (Windows cmd):
 
 ```cmd
 gradlew.bat bootRun
 ```
 
-Or build and run the jar:
-
-```cmd
-gradlew.bat build
-java -jar build\libs\conterra-<version>.jar
-```
-
-Replace `<version>` with the actual artifact name produced by the build.
-
 ## Usage
 
-Once the application is running, call the forecast endpoint. Example (Windows cmd):
+Once the application is running on the default port (8080), call the forecast endpoint.
+
+Coordinate-based example (Windows cmd):
 
 ```cmd
 curl "http://localhost:8080/forecast?lat=51.935132&lon=7.652511"
 ```
 
-Expected behavior:
+Address-based example (requires `OPENCAGE_API_KEY`):
 
-- On success: the service returns a JSON object with timestamp, temperature, feels-like temperature, and humidity.
-- On external API failure or empty response: the service returns an HTTP 502 (Bad Gateway) with a short error message.
+```cmd
+curl "http://localhost:8080/forecast?country=Germany&city=Münster&street=Martin-Luther-King-Weg&housenumber=20"
+```
 
 ## Testing
 
