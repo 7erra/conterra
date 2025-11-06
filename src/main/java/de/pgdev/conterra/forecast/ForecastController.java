@@ -2,6 +2,7 @@ package de.pgdev.conterra.forecast;
 
 import com.opencagedata.jopencage.JOpenCageGeocoder;
 import com.opencagedata.jopencage.model.JOpenCageForwardRequest;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,24 +14,22 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 public class ForecastController {
     final String api = "https://api.openweathermap.org/data/2.5/forecast";
-    UriComponentsBuilder apiUriBuilder;
+    @Value("${api_keys.open_weather}")
+    String openWeatherApiKey;
+    @Value("${api_keys.open_cage}")
+    String openCageApiKey;
     RestTemplate restTemplate = new RestTemplate();
-
-    public ForecastController() {
-        String apiKey = System.getenv("OPENWEATHER_API_KEY");
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException("OPENWEATHER_API_KEY environment variable is not set");
-        }
-        this.apiUriBuilder = UriComponentsBuilder.fromUriString(api)
-                .queryParam("appid", apiKey)
-                .queryParam("lat", "{lat}")
-                .queryParam("lon", "{lon}");
-    }
 
     @GetMapping(value = "/forecast", params = {"lat", "lon"})
     public Forecast getForecastByCoordinate(@RequestParam double lat, @RequestParam double lon) {
+        System.out.println(String.format("openCageApiKey: %s", openCageApiKey));
         OpenWeatherForecastResponse openWeatherForecastResponse = restTemplate.getForObject(
-                apiUriBuilder.buildAndExpand(lat, lon).toUri(),
+                UriComponentsBuilder.fromUriString(api)
+                        .queryParam("appid", openWeatherApiKey)
+                        .queryParam("lat", lat)
+                        .queryParam("lon", lon)
+                        .build()
+                        .toUri(),
                 OpenWeatherForecastResponse.class
         );
         if (openWeatherForecastResponse == null || openWeatherForecastResponse.list() == null || openWeatherForecastResponse.list().isEmpty()) {
@@ -42,7 +41,7 @@ public class ForecastController {
 
     @GetMapping(value = "/forecast", params = {"country", "city", "street", "housenumber"})
     public Forecast getForecastByAddress(@RequestParam String country, @RequestParam String city, @RequestParam String street, @RequestParam String housenumber) {
-        JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder(System.getenv("OPENCAGE_API_KEY"));
+        JOpenCageGeocoder jOpenCageGeocoder = new JOpenCageGeocoder(openCageApiKey);
         JOpenCageForwardRequest request = new JOpenCageForwardRequest(String.format("%s, %s, %s, %s", country, city, street, housenumber));
         var response = jOpenCageGeocoder.forward(request);
         var firstResult = response.getFirstPosition();

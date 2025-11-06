@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: conterra
+
+api_keys:
+  open_weather: ${OPENWEATHER_API_KEY}
+  open_cage: ${OPENCAGE_API_KEY}

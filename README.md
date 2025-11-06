@@ -16,7 +16,6 @@ exposes a weather forecast endpoint and uses the OpenWeather API to fetch foreca
     - [Configuration](#configuration)
     - [Run the app](#run-the-app)
 - [Usage](#usage)
-- [Testing](#testing)
 
 ---
 
@@ -70,11 +69,18 @@ This application requires an API key for OpenWeather. The address-based endpoint
 key
 (if you plan to use the address lookup).
 
-Set environment variables on Windows (cmd.exe):
+You can provide the keys via .env file in the project root:
+
+```
+OPENWEATHER_API_KEY=your_openweather_api_key
+OPENCAGE_API_KEY=your_opencage_api_key
+```
+
+Or set them as environment variables:
 
 ```cmd
-set OPENWEATHER_API_KEY "YOUR_OPENWEATHER_API_KEY"
-set OPENCAGE_API_KEY "YOUR_OPENCAGE_API_KEY"
+setx OPENWEATHER_API_KEY "your_openweather_api_key"
+setx OPENCAGE_API_KEY "your_opencage_api_key"
 ```
 
 ### Run the app
@@ -87,24 +93,20 @@ gradlew.bat bootRun
 
 ## Usage
 
-Once the application is running on the default port (8080), call the forecast endpoint.
+Once the application is running on the default port (8080), call the forecast endpoint. All endpoints are secured via
+basic authentication. The default credentials are:
+
+- Username: `user`
+- Password: `password`
 
 Coordinate-based example (Windows cmd):
 
 ```cmd
-curl "http://localhost:8080/forecast?lat=51.935132&lon=7.652511"
+curl -u user:password "http://localhost:8080/forecast?lat=51.935132&lon=7.652511"
 ```
 
 Address-based example (requires `OPENCAGE_API_KEY`):
 
 ```cmd
-curl "http://localhost:8080/forecast?country=Germany&city=Münster&street=Martin-Luther-King-Weg&housenumber=20"
-```
-
-## Testing
-
-The project contains tests in `src/test/java`. Run tests with Gradle:
-
-```cmd
-gradlew.bat test
+curl -u user:password "http://localhost:8080/forecast?country=Germany&city=M%C3%BCnster&street=Martin-Luther-King-Weg&housenumber=20"
 ```
