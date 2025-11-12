@@ -22,7 +22,6 @@ public class ForecastController {
 
     @GetMapping(value = "/forecast", params = {"lat", "lon"})
     public Forecast getForecastByCoordinate(@RequestParam double lat, @RequestParam double lon) {
-        System.out.println(String.format("openCageApiKey: %s", openCageApiKey));
         OpenWeatherForecastResponse openWeatherForecastResponse = restTemplate.getForObject(
                 UriComponentsBuilder.fromUriString(api)
                         .queryParam("appid", openWeatherApiKey)
